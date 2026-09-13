@@ -33,10 +33,9 @@ payments on its own. If you want any of these to actually work, they'd need
 to be re-embedded as third-party widgets (CanadaHelps, Google Forms, etc.)
 that don't require your own backend.
 
-**Images:** the logo is still hotlinked from the original site's WordPress
-media library, so it'll only keep working as long as that file stays live
-at its URL. The hero photo, however, is now a local file in `images/` (see
-below) — no longer dependent on the original site. Fonts (Fraunces /
+**Images:** the logo is now a local file too (`images/logo.png`, supplied
+directly), so nothing on the site depends on the original accsquamish.ca
+anymore. The hero photo is also local (see below). Fonts (Fraunces /
 Public Sans) load from Google Fonts.
 
 **Upcoming Events calendar:** the homepage now has an "Upcoming Events"
