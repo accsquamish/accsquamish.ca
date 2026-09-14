@@ -1,75 +1,80 @@
 # ACC Squamish — Static Site
 
-A static HTML/CSS conversion of accsquamish.ca (a WordPress site).
+A static HTML/CSS site for accsquamish.ca, based on
+[github.com/accsquamish/accsquamish.ca](https://github.com/accsquamish/accsquamish.ca).
 
-## Pages included
-- `index.html` — Home
-- `volunteer.html` — Volunteer
-- `resources.html` — Resources
-- `courses.html` — Courses
-- `donate.html` — Donate
-- `landmarks.html` — Landmark Names (Sḵwx̱wú7mesh place names)
-- `member-lookup.html` — Member Lookup
-- `rental.html` — Rental
+## Structure
 
-Open `index.html` in any browser, or upload the whole folder to any static
-host (Netlify, GitHub Pages, S3, etc.) — no build step or server required.
+```
+index.html            Home
+volunteer/index.html  Volunteer
+resources/index.html  Resources
+courses/index.html    Courses
+donate/index.html     Donate
+styles.css
+images/
+CNAME                 accsquamish.ca (for GitHub Pages custom domain)
+```
 
-## What was and wasn't carried over
+Each inner page lives in its own folder as `index.html`, so links are clean
+directory-style URLs with no `.html` extension: `/volunteer/`, `/resources/`,
+`/courses/`, `/donate/`.
 
-**Carried over as static content:** all page text, headings, lists, the
-landmarks table, and the navigation/footer structure.
+**Important:** all internal links (nav, footer, logo, stylesheet, hero
+image) use root-relative paths (e.g. `/styles.css`, `/images/logo.png`,
+`/volunteer/`). This is the right approach once the site is hosted at a
+domain root (GitHub Pages with the included `CNAME`, Netlify, etc.), but it
+means you can't just double-click `index.html` and browse around locally —
+root-relative paths don't resolve under the `file://` protocol. To preview
+locally, run a simple local server from this folder, e.g.:
 
-**Not carried over (these needed a live server/backend on the original site):**
-- The **Donate** page's embedded CanadaHelps payment form.
-- The **Member Lookup** page's `[acc_membership_lookup]` plugin, which queries
-  the Alpine Club of Canada's membership database.
-- The **Volunteer** page's application form widget.
-- The **Rental** page was empty/under-construction on the live site as well.
+```
+python3 -m http.server 8000
+```
 
-Each of those spots has a placeholder box with a link or contact email
-instead, since a static site can't run server-side lookups or process
-payments on its own. If you want any of these to actually work, they'd need
-to be re-embedded as third-party widgets (CanadaHelps, Google Forms, etc.)
-that don't require your own backend.
+then visit `http://localhost:8000/`.
 
-**Images:** the logo is now a local file too (`images/logo.png`, supplied
-directly), so nothing on the site depends on the original accsquamish.ca
-anymore. The hero photo is also local (see below). Fonts (Fraunces /
-Public Sans) load from Google Fonts.
+The Landmark Names, Member Lookup, and Rental pages from earlier drafts have
+been removed to match the current source repo.
 
-**Upcoming Events calendar:** the homepage now has an "Upcoming Events"
-section (`index.html`, `#events`) that fetches and parses the club's ICS
-feed directly in the browser:
+## What was and wasn't carried over from the original WordPress site
+
+**Carried over as static content:** all page text, headings, and lists.
+
+**Now working as real, static-friendly embeds:**
+- The **Volunteer** page's application form is a live HubSpot form
+  (`hbspt.forms.create`, portal `20246688`) — no backend required, since
+  HubSpot hosts the form itself.
+
+**Still just a placeholder + contact info (needs a live server/backend on
+the original site to work):**
+- The **Donate** page's CanadaHelps payment form — replaced here with
+  Stripe Payment Links for $5 / $10 / $25, plus an email link for other
+  amounts or ways to give.
+
+**Images:** the logo (`images/logo.png`) and hero photo (`images/hero-trip.jpg`)
+are both local files now — nothing depends on the original accsquamish.ca.
+Fonts (Fraunces / Public Sans) load from Google Fonts.
+
+**Background photo:** the homepage hero uses a web-optimized copy of the
+trip photo (resized to 1600px wide, progressive JPEG quality 68 — 257 KB,
+down from the original 761 KB) with a dark gradient overlay for text
+contrast.
+
+**Upcoming Events calendar:** the homepage has an "Upcoming Events" section
+(`index.html`, `#events`) that fetches and parses the club's ICS feed
+directly in the browser:
 `https://api.ezumee.services/group/ical/2409412b-a714-4644-8a38-d274283b6e1f`
 
 This is a plain client-side `fetch()` + a small hand-rolled ICS parser (no
 library needed) — it lists the next 8 upcoming events with date, time, and
-location. Two caveats, since this is a static site with no backend:
+location, each linking to its own event page (read from the `URL` property,
+falling back to a link found in `DESCRIPTION`). Caveats:
 - It only works if `api.ezumee.services` sends CORS headers allowing
-  browser reads from other origins. If it doesn't, the fetch will fail and
-  the section falls back to a short message pointing to Groups Place —
-  test it once the site is hosted somewhere with a real URL (`file://`
-  pages can't fetch cross-origin at all).
-- Recurring events (`RRULE`) are shown at their first occurrence only; the
-  parser doesn't expand recurrence rules.
-- Each event card links to that event's own page, read from the `URL`
-  property in the ICS feed (falling back to the first link found in
-  `DESCRIPTION` if `URL` is absent). Events with no link anywhere render as
-  plain (non-clickable) cards.
+  browser reads from other origins. If not, it falls back to a short
+  message pointing to Groups Place.
+- Recurring events (`RRULE`) are shown at their first occurrence only.
 
 **Join / registration links:** every "Join" link (nav and footer) plus the
 homepage's "sign up here" and "Register your ACC Membership online" links
-now point to `https://app.alpineclubofcanada.ca/registration`.
-
-If the CORS fallback triggers and you want it working properly, the fix is
-almost always on the calendar API side (enabling `Access-Control-Allow-Origin`)
-or routing the fetch through a small serverless proxy you control.
-
-**Background photo:** the homepage hero uses a locally bundled, web-optimized
-copy of the trip photo at `images/hero-trip.jpg` (resized to 1600px wide,
-re-encoded as progressive JPEG at quality 68 — 257 KB, down from the
-original 761 KB) with a dark gradient overlay for text contrast. If there
-are other background photos you'd like on the Volunteer/Resources/Courses/
-Donate pages, send them over and I'll optimize and wire those in the same
-way.
+point to `https://app.alpineclubofcanada.ca/registration`.

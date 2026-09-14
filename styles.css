@@ -132,7 +132,7 @@ nav.main-nav a.active {
   border-bottom: 1px solid var(--line);
   background-image:
     linear-gradient(180deg, rgba(20, 32, 22, 0.55), rgba(15, 26, 18, 0.72)),
-    url('images/hero-trip.jpg');
+    url('/images/hero-trip.jpg');
   background-size: cover;
   background-position: center;
   color: #F6F4EC;
@@ -331,6 +331,13 @@ th, td {
 }
 
 th { font-family: 'Fraunces', serif; font-weight: 600; color: var(--forest-dark); }
+
+.donate-options {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin: 22px 0 6px;
+}
 
 .notice {
   background: #EFE9D8;
